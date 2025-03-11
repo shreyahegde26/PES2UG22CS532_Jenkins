@@ -1,42 +1,55 @@
-
+pipeline {
     agent any
 
+    environment {
+        SRN = "PES2UG22CS532"
+        REPO_URL = "https://github.com/shreyahegde26/PES2UG22CS532_Jenkins" // Replace with your actual repo URL
+        FILE_NAME = "hello.cpp"
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Create & Push .cpp File') {
             steps {
-                // Check out code from GitHub repository
-                git url: 'https://github.com/simrandas04/PES2UG22CS554_Jenkins.git', branch: 'main'
+                script {
+                    sh '''
+                        echo "#include <iostream>\nusing namespace std;\nint main() {\n    cout << \"Hello, Jenkins Pipeline!\" << endl;\n    return 0;\n}" > $FILE_NAME
+                        git init
+                        git remote add origin $REPO_URL
+                        git add $FILE_NAME
+                        git commit -m "Added working C++ file"
+                        git branch -M main
+                        git push -u origin main
+                    '''
+                }
             }
         }
 
         stage('Build') {
             steps {
-                // Example build step (for C++ project)
-                echo 'Building the C++ project...'
-                sh 'g++ -o my_program my_program.cpp'
+                script {
+                    sh "g++ -o $SRN $FILE_NAME"
+                }
             }
         }
 
         stage('Test') {
             steps {
-                // Example test step (you can replace it with actual test commands)
-                echo 'Running tests...'
-                sh './run-tests.sh'  // Replace with your test script
+                script {
+                    sh "./$SRN"
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                // Example deploy step (you can replace it with your actual deployment commands)
-                echo 'Deploying the application...'
-                sh './deploy.sh'  // Replace with your deployment script
+                echo 'Deploying application...'
+                // Add deployment logic here
             }
         }
     }
 
     post {
         failure {
-            // Post condition for when the pipeline fails
             echo 'Pipeline failed'
         }
     }
