@@ -6,7 +6,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building the application...'
-                    sh 'g++ -o PES2UG22CS532-1 main.cpp'  // Compile C++ file
+                    sh 'sh 'g++ -o PES2UG22CS532-1 non_existing_file.cpp''  // Compile C++ file
                 }
             }
         }
