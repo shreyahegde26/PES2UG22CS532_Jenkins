@@ -2,42 +2,36 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                // Check out code from GitHub repository
-                git url: 'https://github.com/shreyahegde26/PES2UG22CS532_Jenkins', branch: 'main'
-            }
-        }
-
         stage('Build') {
             steps {
-                // Example build step (for C++ project)
-                echo 'Building the C++ project...'
-                sh 'g++ -o my_program my_program.cpp'
+                script {
+                    echo 'Building the application...'
+                    sh 'g++ -o PES2UG22CS532-1 main.cpp'  // Compile C++ file
+                }
             }
         }
 
         stage('Test') {
             steps {
-                // Example test step (you can replace it with actual test commands)
-                echo 'Running tests...'
-                sh './run-tests.sh'  // Replace with your test script
+                script {
+                    echo 'Testing the application...'
+                    sh './PES2UG22CS532-1'  // Run compiled C++ file
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                // Example deploy step (you can replace it with your actual deployment commands)
-                echo 'Deploying the application...'
-                sh './deploy.sh'  // Replace with your deployment script
+                script {
+                    echo 'Deploying application...'
+                }
             }
         }
     }
 
     post {
         failure {
-            // Post condition for when the pipeline fails
-            echo 'Pipeline failed'
+            echo 'Pipeline failed!'
         }
     }
 }
