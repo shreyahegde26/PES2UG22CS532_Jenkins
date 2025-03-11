@@ -1,24 +1,40 @@
 pipeline {
     agent any
 
-    environment {
-        SRN = "PES2UG22CS532"
-        REPO_URL = "https://github.com/shreyahegde26/PES2UG22CS532_Jenkins" // Replace with your actual repo URL
-        FILE_NAME = "hello.cpp"
-    }
-
     stages {
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/shreyahegde26/PES2UG22CS532_Jenkins'
+            }
+        }
+
         stage('Create & Push .cpp File') {
             steps {
                 script {
                     sh '''
-                        echo "#include <iostream>\nusing namespace std;\nint main() {\n    cout << \"Hello, Jenkins Pipeline!\" << endl;\n    return 0;\n}" > $FILE_NAME
-                        git init
-                        git remote add origin $REPO_URL
-                        git add $FILE_NAME
-                        git commit -m "Added working C++ file"
-                        git branch -M main
-                        git push -u origin main
+                    # Ensure any previous failures don't affect the pipeline
+                    set -e
+
+                    # Create the C++ file
+                    cat <<EOL > main.cpp
+                    #include <iostream>
+                    using namespace std;
+                    int main() {
+                        cout << "Hello, Jenkins Pipeline!" << endl;
+                        return 0;
+                    }
+                    EOL
+
+                    # Initialize Git if not already initialized
+                    [ ! -d ".git" ] && git init
+
+                    # Add remote only if it doesn't exist
+                    git remote | grep origin || git remote add origin https://github.com/shreyahegde26/PES2UG22CS532_Jenkins
+
+                    # Add, commit, and push changes
+                    git add main.cpp
+                    git commit -m "Added main.cpp via Jenkins"
+                    git push origin main
                     '''
                 }
             }
@@ -27,7 +43,10 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh "g++ -o $SRN $FILE_NAME"
+                    sh '''
+                    # Compile the C++ file
+                    g++ -o main main.cpp
+                    '''
                 }
             }
         }
@@ -35,22 +54,27 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    sh "./$SRN"
+                    sh '''
+                    # Run the compiled program
+                    ./main
+                    '''
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
-                // Add deployment logic here
+                echo "Deployment step (Modify as needed)"
             }
         }
     }
 
     post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
         failure {
-            echo 'Pipeline failed'
+            echo 'Pipeline failed. Check logs for errors.'
         }
     }
 }
