@@ -2,62 +2,42 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/shreyahegde26/PES2UG22CS532_Jenkins'
-            }
-        }
-
-        stage('Create & Push .cpp File') {
-            steps {
-                script {
-                    sh '''
-                    set -e
-
-                    # Create main.cpp
-                    cat <<EOF > main.cpp
-                    #include <iostream>
-                    using namespace std;
-                    int main() {
-                        cout << "Hello, Jenkins Pipeline!" << endl;
-                        return 0;
-                    }
-                    EOL
-
-                    # Add, commit, and push the file
-                    git add main.cpp
-                    git commit -m "Added main.cpp via Jenkins"
-                    git push origin main
-                    '''
-                }
+                // Check out code from GitHub repository
+                git url: 'https://github.com/shreyahegde26/PES2UG22CS532_Jenkins', branch: 'main'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'g++ -o main main.cpp'
+                // Example build step (for C++ project)
+                echo 'Building the C++ project...'
+                sh 'g++ -o my_program my_program.cpp'
             }
         }
 
         stage('Test') {
             steps {
-                sh './main'
+                // Example test step (you can replace it with actual test commands)
+                echo 'Running tests...'
+                sh './run-tests.sh'  // Replace with your test script
             }
         }
 
         stage('Deploy') {
             steps {
-                echo "Deployment step (Modify as needed)"
+                // Example deploy step (you can replace it with your actual deployment commands)
+                echo 'Deploying the application...'
+                sh './deploy.sh'  // Replace with your deployment script
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
         failure {
-            echo 'Pipeline failed. Check logs for errors.'
+            // Post condition for when the pipeline fails
+            echo 'Pipeline failed'
         }
     }
 }
