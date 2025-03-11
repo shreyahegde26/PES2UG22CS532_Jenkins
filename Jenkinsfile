@@ -15,7 +15,7 @@ pipeline {
                     set -e
 
                     # Create main.cpp
-                    cat <<EOL > main.cpp
+                    cat <<EOF > main.cpp
                     #include <iostream>
                     using namespace std;
                     int main() {
