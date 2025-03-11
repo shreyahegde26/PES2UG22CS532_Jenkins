@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/shreyahegde26/PES2UG22CS532_Jenkins'
+                git branch: 'main', url: 'https://github.com/shreyahegde26/PES2UG22CS532_Jenkins'
             }
         }
 
@@ -12,10 +12,9 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    # Ensure any previous failures don't affect the pipeline
                     set -e
 
-                    # Create the C++ file
+                    # Create main.cpp
                     cat <<EOL > main.cpp
                     #include <iostream>
                     using namespace std;
@@ -25,13 +24,7 @@ pipeline {
                     }
                     EOL
 
-                    # Initialize Git if not already initialized
-                    [ ! -d ".git" ] && git init
-
-                    # Add remote only if it doesn't exist
-                    git remote | grep origin || git remote add origin https://github.com/shreyahegde26/PES2UG22CS532_Jenkins
-
-                    # Add, commit, and push changes
+                    # Add, commit, and push the file
                     git add main.cpp
                     git commit -m "Added main.cpp via Jenkins"
                     git push origin main
@@ -42,23 +35,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                script {
-                    sh '''
-                    # Compile the C++ file
-                    g++ -o main main.cpp
-                    '''
-                }
+                sh 'g++ -o main main.cpp'
             }
         }
 
         stage('Test') {
             steps {
-                script {
-                    sh '''
-                    # Run the compiled program
-                    ./main
-                    '''
-                }
+                sh './main'
             }
         }
 
